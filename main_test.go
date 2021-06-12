@@ -119,3 +119,26 @@ func TestReadFileLines(t *testing.T) {
 	}
 
 }
+
+func TestReadArguments(t *testing.T) {
+	os.Args = []string{"program", "searchString", "fileName"}
+	args, err := readArguments()
+	if err != nil {
+		t.Fatalf("Error reading arguments%v\n", err)
+	}
+	if len(args) != 3 {
+		t.Fatalf("Wrong arguments returned. Expect 3 got %v\n", len(args))
+	}
+
+	os.Args = []string{"program", "searchString", "fileName", "-R"}
+	args, _ = readArguments()
+	if len(args) != 4 {
+		t.Fatalf("Wrong arguments returned. Expect 4 got %v\n", len(args))
+	}
+
+	os.Args = []string{"program", "searchString", "fileName", "-t"}
+	_, err = readArguments()
+	if err == nil {
+		t.Fatalf("Should return error\n")
+	}
+}

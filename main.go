@@ -25,11 +25,6 @@ func main() {
 	if len(args) == 3 {
 		execute(fileName, searchString)
 	} else if len(args) == 4 {
-		if args[3] != "-R" {
-			fmt.Println("gogrep: Wrong flag")
-			os.Exit(1)
-		}
-
 		err = handleRecursiveSearch(searchString, fileName)
 	}
 }
@@ -49,7 +44,11 @@ func execute(fileName, searchString string) {
 func readArguments() ([]string, error) {
 	args := os.Args
 	if len(args) < 3 {
-		return nil, errors.New("Not enough arguments")
+		return nil, errors.New("gogrep: Not enough arguments")
+	}
+
+	if len(args) == 4 && args[3] != "-R" {
+		return nil, errors.New("gogrep: Wrong flag given")
 	}
 
 	return args, nil

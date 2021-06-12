@@ -26,6 +26,10 @@ func main() {
 		execute(fileName, searchString)
 	} else if len(args) == 4 {
 		err = handleRecursiveSearch(searchString, fileName)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 }
 
@@ -36,7 +40,7 @@ func execute(fileName, searchString string) {
 		os.Exit(1)
 	}
 
-	matches := searchForMatches(searchString, lines)
+	matches := searchForMatches(fileName, searchString, lines)
 	printMatches(matches)
 }
 
@@ -67,11 +71,12 @@ func readFileLines(fileName string) ([]string, error) {
 }
 
 // receive a slice of lines and search for the searchString
-func searchForMatches(searchString string, lines []string) []Match {
+func searchForMatches(fileName, searchString string, lines []string) []Match {
 	matches := make([]Match, 0)
 	for idx, line := range lines {
 		if strIdx := strings.Index(line, searchString); strIdx > -1 {
 			match := Match{
+				fileName:    fileName,
 				lineNumber:  idx + 1,
 				lineContent: line,
 			}
@@ -85,9 +90,8 @@ func searchForMatches(searchString string, lines []string) []Match {
 // will print to the user each line and number the search
 // string appeared
 func printMatches(matches []Match) {
-	// TODO
 	for _, match := range matches {
-		fmt.Printf("%v: %v\n", match.lineNumber, match.lineContent)
+		fmt.Printf("%v:%v: %v\n", match.fileName, match.lineNumber, match.lineContent)
 	}
 }
 
@@ -100,7 +104,20 @@ func handleRecursiveSearch(searchString, dirName string) error {
 
 	files, err := readFilesFromDir(file)
 	for _, fileName := range files {
-		execute(fileName, searchString)
+		fileInfo, err := os.Stat(dirName + "/" + fileName)
+		if err != nil {
+			return err
+		}
+
+		fullPath := dirName + "/" + fileName
+		if fileInfo.IsDir() {
+			err = handleRecursiveSearch(searchString, fullPath)
+			if err != nil {
+				return err
+			}
+		} else {
+			execute(fullPath, searchString)
+		}
 	}
 
 	return nil

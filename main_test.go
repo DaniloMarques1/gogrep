@@ -81,7 +81,7 @@ func TestReadFilesFromDir(t *testing.T) {
 func TestSearchForMacthes(t *testing.T) {
 	lines := []string{"this is the first line", "now the second line", "and here is the thrid line"}
 	searchString := "the"
-	matches := searchForMatches(searchString, lines)
+	matches := searchForMatches("randomFile", searchString, lines)
 	if len(matches) != 3 {
 		t.Fatalf("Wrong matches returned. exepct 3 got %v\n", len(matches))
 	}

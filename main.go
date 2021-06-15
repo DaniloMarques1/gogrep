@@ -104,12 +104,12 @@ func handleRecursiveSearch(searchString, dirName string) error {
 
 	files, err := readFilesFromDir(file)
 	for _, fileName := range files {
-		fileInfo, err := os.Stat(dirName + "/" + fileName)
+		fullPath := dirName + "/" + fileName
+		fileInfo, err := os.Stat(fullPath)
 		if err != nil {
 			return err
 		}
 
-		fullPath := dirName + "/" + fileName
 		if fileInfo.IsDir() {
 			err = handleRecursiveSearch(searchString, fullPath)
 			if err != nil {
